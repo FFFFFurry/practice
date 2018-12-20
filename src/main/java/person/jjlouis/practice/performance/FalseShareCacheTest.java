@@ -7,7 +7,8 @@ package person.jjlouis.practice.performance;
  */
 public class FalseShareCacheTest {
 
-    private final static long
+    public final static int MAX_THREAD_COUNT = 10;
+    public final static long LOOP_COUNT = 500L * 1000L * 1000L;
 
     public static void main(String[] args) throws InterruptedException {
         final PaddingObject paddingObject = new PaddingObject();
@@ -67,45 +68,20 @@ public class FalseShareCacheTest {
 
 }
 
-class PaddingObject{
-    private long tmp1 = 0L;
-    private long p1,p2,p3,p4,p5,p6,p7,p8,p9 = 0L;
-    private long tmp2 = 0L;
+class PaddingObject implements Runnable{
+    public static volatile long tmp1 = 0L;
+    public static long p1,p2,p3,p4,p5,p6,p7,p8,p9 = 0L;
+    public static volatile long tmp2 = 0L;
 
-    public long getTmp1() {
-        return tmp1;
-    }
-
-    public void setTmp1(long tmp1) {
-        this.tmp1 = tmp1;
-    }
-
-    public long getTmp2() {
-        return tmp2;
-    }
-
-    public void setTmp2(long tmp2) {
-        this.tmp2 = tmp2;
+    @Override
+    public void run() {
+        for(int i = 0; i < 1000000000; i++){
+            noPaddingObject.setTmp1(noPaddingObject.getTmp1() + 1);
+        }
     }
 }
 
-class NoPaddingObject{
-    private long tmp1 = 0L;
-    private long tmp2 = 0L;
-
-    public long getTmp1() {
-        return tmp1;
-    }
-
-    public void setTmp1(long tmp1) {
-        this.tmp1 = tmp1;
-    }
-
-    public long getTmp2() {
-        return tmp2;
-    }
-
-    public void setTmp2(long tmp2) {
-        this.tmp2 = tmp2;
-    }
+final class NoPaddingObject{
+    private static long tmp1 = 0L;
+    private static long tmp2 = 0L;
 }
